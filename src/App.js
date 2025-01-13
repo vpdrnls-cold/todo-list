@@ -8,13 +8,22 @@ function App() {
   const [filter, setFilter] = useState('all'); // 필터 상태
   const [isDarkMode, setIsDarkMode] = useState(false); // 다크모드 상태
 
-  // 다크모드 상태 초기화 (localStorage에서 가져오기)
+  // 다크모드 초기화
   useEffect(() => {
     const savedMode = localStorage.getItem('darkMode') === 'true';
     setIsDarkMode(savedMode);
   }, []);
 
-  // 다크모드 상태 변경 시 localStorage에 저장
+  useEffect(() => {
+    // 다크모드에 따라 body 클래스 설정
+    if (isDarkMode) {
+      document.body.classList.add('dark-mode');
+    } else {
+      document.body.classList.remove('dark-mode');
+    }
+  }, [isDarkMode]);
+
+  // 다크모드 상태 변경 시 localStorage 저장
   useEffect(() => {
     localStorage.setItem('darkMode', isDarkMode);
   }, [isDarkMode]);
@@ -84,22 +93,39 @@ function App() {
 
   return (
     <div className={`App ${isDarkMode ? 'dark-mode' : ''}`}>
+      {/* 다크모드 토글 버튼 */}
       <div className="theme-toggle">
         {isDarkMode ? (
-          <span role="button" onClick={toggleDarkMode} className="theme-icon">
+          <span
+            role="button"
+            onClick={toggleDarkMode}
+            className="theme-icon"
+            title="Switch to Light Mode"
+          >
             ☀️
           </span>
         ) : (
-          <span role="button" onClick={toggleDarkMode} className="theme-icon">
+          <span
+            role="button"
+            onClick={toggleDarkMode}
+            className="theme-icon"
+            title="Switch to Dark Mode"
+          >
             🌙
           </span>
         )}
       </div>
+
+      {/* 제목 */}
       <h1 className={`title ${isDarkMode ? 'dark-mode' : ''}`}>Todo List</h1>
+
+      {/* 할 일 추가 */}
       <div className={`todo-box ${isDarkMode ? 'dark-mode' : ''}`}>
         <TodoForm addTodo={addTodo} isDarkMode={isDarkMode} />
       </div>
-      <div>
+
+      {/* 필터 버튼 */}
+      <div className="filter-buttons">
         <button
           className={`filter-button ${isDarkMode ? 'dark-mode' : ''}`}
           onClick={() => setFilter('all')}
@@ -119,6 +145,8 @@ function App() {
           Uncompleted
         </button>
       </div>
+
+      {/* 할 일 목록 */}
       <TodoList
         todos={filteredTodos}
         toggleComplete={toggleComplete}

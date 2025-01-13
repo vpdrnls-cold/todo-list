@@ -46,10 +46,17 @@ button:disabled {
 
 button.delete {
   background-color: #dc3545;
+  text-decoration: none;
 }
 
 button.delete:hover {
-  background-color: #c82333;
+  background-color: #c8233d; /* Delete 버튼 hover 시 색상 */
+}
+
+/* 완료된 할 일 텍스트 스타일 */
+span.completed {
+  text-decoration: line-through;
+  color: gray;
 }
 
 button.dark-mode {
@@ -117,8 +124,14 @@ input[type="text"] {
   }
 
   li {
-    flex-direction: column;
-    align-items: flex-start;
+    display: flex; /* 플렉스박스를 사용하여 정렬 */
+  align-items: center; /* 수직 중앙 정렬 */
+  justify-content: space-between; /* 양쪽 정렬: 텍스트와 버튼을 좌우로 */
+  background: #2c2c2c; /* 다크모드 배경 */
+  padding: 10px 15px;
+  margin: 10px 0;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   }
 
   button {
@@ -253,4 +266,19 @@ button.add-button:hover {
   transform: scale(1.05);
 }
 
+li small {
+  font-size: 0.9rem;
+  color: gray;
+}
 
+span.completed {
+  text-decoration: line-through;
+  color: gray;
+  
+}
+
+
+body.dark-mode {
+  background-color: #181818; /* 다크모드 배경색 */
+  color: #f0f0f0; /* 다크모드 텍스트 색상 */
+}
