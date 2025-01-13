@@ -4,17 +4,26 @@ import TodoList from './components/TodoList';
 import './App.css';
 
 function App() {
-  const [todos, setTodos] = useState([]);
-  const [filter, setFilter] = useState('all');
+  const [todos, setTodos] = useState([]); // 할 일 목록
+  const [filter, setFilter] = useState('all'); // 필터 상태
+  const [isDarkMode, setIsDarkMode] = useState(false); // 다크모드 상태
+
+  // 다크모드 상태 초기화 (localStorage에서 가져오기)
+  useEffect(() => {
+    const savedMode = localStorage.getItem('darkMode') === 'true';
+    setIsDarkMode(savedMode);
+  }, []);
+
+  // 다크모드 상태 변경 시 localStorage에 저장
+  useEffect(() => {
+    localStorage.setItem('darkMode', isDarkMode);
+  }, [isDarkMode]);
 
   // 백엔드에서 할 일 목록 가져오기
   useEffect(() => {
     fetch('http://localhost:5000/api/todos')
       .then((res) => res.json())
-      .then((data) => {
-        console.log('Fetched todos:', data); // 디버깅 로그
-        setTodos(data);
-      })
+      .then((data) => setTodos(data))
       .catch((error) => console.error('Error fetching todos:', error));
   }, []);
 
@@ -32,28 +41,16 @@ function App() {
 
   // 할 일 삭제
   const deleteTodo = (id) => {
-    if (!id) {
-      console.error('Invalid id:', id);
-      return;
-    }
-
     fetch(`http://localhost:5000/api/todos/${id}`, {
       method: 'DELETE',
     })
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error('Failed to delete todo');
-        }
-        console.log('Deleted todo with id:', id);
-        setTodos(todos.filter((todo) => todo._id !== id));
-      })
+      .then(() => setTodos(todos.filter((todo) => todo._id !== id)))
       .catch((error) => console.error('Error deleting todo:', error));
   };
 
   // 완료 상태 토글
   const toggleComplete = (id) => {
     const todo = todos.find((t) => t._id === id);
-
     if (!todo) {
       console.error(`Todo with id ${id} not found.`);
       return;
@@ -73,26 +70,60 @@ function App() {
       .catch((error) => console.error('Error updating todo:', error));
   };
 
-  // 필터링된 할 일
+  // 필터링된 할 일 목록
   const filteredTodos = todos.filter((todo) => {
     if (filter === 'completed') return todo.completed;
     if (filter === 'uncompleted') return !todo.completed;
     return true;
   });
 
+  // 다크모드 토글
+  const toggleDarkMode = () => {
+    setIsDarkMode((prevMode) => !prevMode);
+  };
+
   return (
-    <div className="App">
-      <h1>Todo List</h1>
-      <TodoForm addTodo={addTodo} />
+    <div className={`App ${isDarkMode ? 'dark-mode' : ''}`}>
+      <div className="theme-toggle">
+        {isDarkMode ? (
+          <span role="button" onClick={toggleDarkMode} className="theme-icon">
+            ☀️
+          </span>
+        ) : (
+          <span role="button" onClick={toggleDarkMode} className="theme-icon">
+            🌙
+          </span>
+        )}
+      </div>
+      <h1 className={`title ${isDarkMode ? 'dark-mode' : ''}`}>Todo List</h1>
+      <div className={`todo-box ${isDarkMode ? 'dark-mode' : ''}`}>
+        <TodoForm addTodo={addTodo} isDarkMode={isDarkMode} />
+      </div>
       <div>
-        <button onClick={() => setFilter('all')}>All</button>
-        <button onClick={() => setFilter('completed')}>Completed</button>
-        <button onClick={() => setFilter('uncompleted')}>Uncompleted</button>
+        <button
+          className={`filter-button ${isDarkMode ? 'dark-mode' : ''}`}
+          onClick={() => setFilter('all')}
+        >
+          All
+        </button>
+        <button
+          className={`filter-button ${isDarkMode ? 'dark-mode' : ''}`}
+          onClick={() => setFilter('completed')}
+        >
+          Completed
+        </button>
+        <button
+          className={`filter-button ${isDarkMode ? 'dark-mode' : ''}`}
+          onClick={() => setFilter('uncompleted')}
+        >
+          Uncompleted
+        </button>
       </div>
       <TodoList
         todos={filteredTodos}
         toggleComplete={toggleComplete}
         deleteTodo={deleteTodo}
+        isDarkMode={isDarkMode}
       />
     </div>
   );

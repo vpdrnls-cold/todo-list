@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-function TodoForm({ addTodo }) {
+function TodoForm({ addTodo, isDarkMode }) {
   const [text, setText] = useState('');
 
   const handleSubmit = (e) => {
@@ -18,8 +18,14 @@ function TodoForm({ addTodo }) {
         value={text}
         onChange={(e) => setText(e.target.value)}
         placeholder="Add a new task"
+        className={isDarkMode ? 'dark-mode' : ''}
       />
-      <button type="submit">Add</button>
+      <button
+        type="submit"
+        className={`add-button ${isDarkMode ? 'dark-mode' : ''}`}
+      >
+        Add
+      </button>
     </form>
   );
 }
